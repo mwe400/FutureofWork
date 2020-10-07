@@ -7,6 +7,8 @@ library(stringr)
 
 nytimes50 <- data_frame(file = file.choose()) %>% mutate(text=map(file, read_lines))
 
+#unpack data from the file
+
 nytimes50_clean <- nytimes50 %>%
 +   unnest() %>%
 +   filter(text != "%!TEX root = NYTimes1950sentences2.csv") %>%
@@ -14,3 +16,16 @@ nytimes50_clean <- nytimes50 %>%
 +          text != "") %>%
 +   mutate(line_number = 1:n(),
 +          file = str_sub(basename(file), 1, -5))
+
+nytimes50_clean_words <- nytimes50_clean %>%
++   unnest_tokens(word, text) %>%
++   filter(!str_detect(word, "[0-9]"))
+
+
+> nytimes50_clean_words %>%
++   inner_join(get_sentiments("nrc")) %>%
++   group_by(index = line_number %/% 25, file, sentiment) %>%
++   summarize(n = n()) %>%
++   ggplot(aes(x = index, y = n, fill = file)) + 
++   geom_bar(stat = "identity", alpha = 0.8) + 
++   facet_wrap(~ sentiment, ncol = 5)
