@@ -3,3 +3,14 @@
 library(tidyverse)
 library(tidytext)
 library(stringr)
+
+
+nytimes50 <- data_frame(file = file.choose()) %>% mutate(text=map(file, read_lines))
+
+nytimes50_clean <- nytimes50 %>%
++   unnest() %>%
++   filter(text != "%!TEX root = NYTimes1950sentences2.csv") %>%
++   filter(!str_detect(text, "^(\\\\[A-Z,a-z])"),
++          text != "") %>%
++   mutate(line_number = 1:n(),
++          file = str_sub(basename(file), 1, -5))
