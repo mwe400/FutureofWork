@@ -1,0 +1,5 @@
+#R Script using tidytext to do basic sentiment analysis
+
+library(tidyverse)
+library(tidytext)
+library(stringr)
